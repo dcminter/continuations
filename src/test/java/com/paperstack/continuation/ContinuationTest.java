@@ -12,19 +12,19 @@ public class ContinuationTest {
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 
+	private static final int[] EXPECTED = { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987 };
+
 	@Test
 	public void unconsumedFibonacci() {
 		new Fibonacci();
 	}
-	
+
 	@Test
 	public void testConsumedFibonacci() {
-		final var expected = new int[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987 };
-
 		var index = 0;
 		for (final int actual : new Fibonacci()) {
-			assertEquals(String.format("Fibonacci value incorrect at %d", index), actual, expected[index++]);
-			if (index >= expected.length) {
+			assertEquals(String.format("Fibonacci value incorrect at %d", index), actual, EXPECTED[index++]);
+			if (index >= EXPECTED.length) {
 				break;
 			}
 		}
@@ -35,12 +35,10 @@ public class ContinuationTest {
 		exception.expect(ContinuationException.class);
 		exception.expectCause(instanceOf(TestException.class));
 
-		final var expected = new int[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987 };
-
 		var index = 0;
 		for (final int actual : new BreakingFibonacci(100)) {
-			assertEquals(String.format("Fibonacci value incorrect at %d", index), actual, expected[index++]);
-			if (index >= expected.length) {
+			assertEquals(String.format("Fibonacci value incorrect at %d", index), actual, EXPECTED[index++]);
+			if (index >= EXPECTED.length) {
 				break;
 			}
 		}
