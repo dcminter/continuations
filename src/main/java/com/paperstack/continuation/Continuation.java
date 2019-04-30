@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * used in an extended-for loop.
  *
  * Don't use this code for anything. It's got lots of problems, not least the
- * overhead of the thread (and its stack) associated with every Continuation
+ * overhead of the thread (and its stack space) associated with every Continuation
  * object!
  *
  * @author Dave Minter
