@@ -9,8 +9,16 @@ import org.junit.rules.ExpectedException;
 
 public class ContinuationTest {
 
+	@Rule
+	public final ExpectedException exception = ExpectedException.none();
+
 	@Test
-	public void testFibonacciSequence() {
+	public void unconsumedFibonacci() {
+		new Fibonacci();
+	}
+	
+	@Test
+	public void testConsumedFibonacci() {
 		final var expected = new int[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987 };
 
 		var index = 0;
@@ -22,11 +30,8 @@ public class ContinuationTest {
 		}
 	}
 
-	@Rule
-	public final ExpectedException exception = ExpectedException.none();
-
 	@Test
-	public void testFibonacciSequenceException() {
+	public void testConsumedFibonacciException() {
 		exception.expect(ContinuationException.class);
 		exception.expectCause(instanceOf(TestException.class));
 
