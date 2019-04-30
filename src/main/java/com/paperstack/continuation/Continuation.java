@@ -99,8 +99,10 @@ abstract public class Continuation<T> implements Iterable<T> {
 
 		final var taken = results.take();
 
-		if (thrown != null) {
-			throw thrown;
+		synchronized(this) {
+			if (thrown != null) {
+				throw thrown;
+			}
 		}
 
 		return taken.orElse(null);
@@ -117,7 +119,11 @@ abstract public class Continuation<T> implements Iterable<T> {
 
 	private void uncaughtExceptionHandler(final Thread thread, final Throwable throwable) {
 		LOGGER.debug("Caught exception", throwable);
-		this.thrown = throwable;
+		
+		synchronized(this) {
+			this.thrown = throwable;
+		}
+		
 		try {
 			this.results.put(Optional.empty());
 		} catch (final InterruptedException e) {
