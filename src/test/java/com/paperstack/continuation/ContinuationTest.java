@@ -11,9 +11,9 @@ public class ContinuationTest {
 
 	@Test
 	public void testFibonacciSequence() {
-		final int[] expected = new int[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987 };
+		final var expected = new int[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987 };
 
-		int index = 0;
+		var index = 0;
 		for (final int actual : new Fibonacci()) {
 			assertEquals(String.format("Fibonacci value incorrect at %d", index), actual, expected[index++]);
 			if (index >= expected.length) {
@@ -30,9 +30,9 @@ public class ContinuationTest {
 		exception.expect(ContinuationException.class);
 		exception.expectCause(instanceOf(TestException.class));
 
-		final int[] expected = new int[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987 };
+		final var expected = new int[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987 };
 
-		int index = 0;
+		var index = 0;
 		for (final int actual : new BreakingFibonacci(100)) {
 			assertEquals(String.format("Fibonacci value incorrect at %d", index), actual, expected[index++]);
 			if (index >= expected.length) {
@@ -47,11 +47,11 @@ public class ContinuationTest {
 	public static class Fibonacci extends Continuation<Integer> {
 		public void run() throws Exception {
 			yield(0);
-			int i = 0;
-			int j = 1;
+			var i = 0;
+			var j = 1;
 			while (true) {
 				yield(j);
-				int current = i + j;
+				final var current = i + j;
 				i = j;
 				j = current;
 			}
@@ -72,14 +72,14 @@ public class ContinuationTest {
 
 		public void run() throws Exception {
 			yield(0);
-			int i = 0;
-			int j = 1;
+			var i = 0;
+			var j = 1;
 			while (true) {
 				if (j > target) {
 					throw new TestException("Kaboom!");
 				}
 				yield(j);
-				int current = i + j;
+				final var current = i + j;
 				i = j;
 				j = current;
 			}

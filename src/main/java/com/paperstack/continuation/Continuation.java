@@ -97,7 +97,7 @@ abstract public class Continuation<T> implements Iterable<T> {
 	final public T next() throws Throwable {
 		initThread();
 
-		final Optional<T> taken = results.take();
+		final var taken = results.take();
 
 		if (thrown != null) {
 			throw thrown;
