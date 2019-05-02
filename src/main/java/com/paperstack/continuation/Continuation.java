@@ -1,7 +1,6 @@
 package com.paperstack.continuation;
 
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.concurrent.SynchronousQueue;
 
 import org.slf4j.Logger;
@@ -18,8 +17,8 @@ import org.slf4j.LoggerFactory;
  * used in an extended-for loop.
  *
  * Don't use this code for anything. It's got lots of problems, not least the
- * overhead of the thread (and its stack space) associated with every Continuation
- * object!
+ * overhead of the thread (and its stack space) associated with every
+ * Continuation object!
  *
  * @author Dave Minter
  */
@@ -43,12 +42,9 @@ abstract public class Continuation<T> implements Iterable<T> {
 		}
 	}
 
-	// If an exception is thrown on the thread, assign it here for later retrieval
-	private Throwable thrown = null;
-
 	// Used to synchronize consumption of the output of the continuation
 	// with production of values
-	private final SynchronousQueue<Optional<T>> results = new SynchronousQueue<>();
+	private final SynchronousQueue<Result<T>> results = new SynchronousQueue<>();
 
 	/**
 	 * Provided to allow iteration over the continuation
@@ -85,7 +81,7 @@ abstract public class Continuation<T> implements Iterable<T> {
 	 * @throws InterruptedException
 	 */
 	final protected void yield(final T item) throws InterruptedException {
-		results.put(Optional.of(item));
+		results.put(new Result<T>(item));
 	}
 
 	/**
@@ -96,16 +92,10 @@ abstract public class Continuation<T> implements Iterable<T> {
 	 */
 	final public T next() throws Throwable {
 		initThread();
-
 		final var taken = results.take();
-
-		synchronized(this) {
-			if (thrown != null) {
-				throw thrown;
-			}
-		}
-
-		return taken.orElse(null);
+		if (!taken.isOk())
+			throw taken.getThrowable();
+		return taken.getValue();
 	}
 
 	// Initializes the thread representing the continuation's context.
@@ -119,13 +109,8 @@ abstract public class Continuation<T> implements Iterable<T> {
 
 	private void uncaughtExceptionHandler(final Thread thread, final Throwable throwable) {
 		LOGGER.debug("Caught exception", throwable);
-		
-		synchronized(this) {
-			this.thrown = throwable;
-		}
-		
 		try {
-			this.results.put(Optional.empty());
+			this.results.put(new Result<T>(throwable));
 		} catch (final InterruptedException e) {
 			LOGGER.error("Unexpected interruption when populating the continuation response", e);
 		}
